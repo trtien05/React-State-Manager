@@ -13,6 +13,7 @@ import {
   REGISTER,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import blogSlice from "./blogs/blogSlice";
 
 const persistConfig = {
   key: "root",
@@ -24,6 +25,7 @@ const rootReducer = combineReducers({
   counter: counterSlice,
   user: userSlice,
   app: appSlice,
+  blog: blogSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

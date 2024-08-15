@@ -2,6 +2,7 @@ import { Container } from 'react-bootstrap';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import UsersTable from './users.table';
+import BlogsTable from './blogs.table';
 
 const TabsContent = () => {
   return (
@@ -15,7 +16,7 @@ const TabsContent = () => {
           <UsersTable />
         </Tab>
         <Tab eventKey="blog" title="Blog">
-          Tab content for Blog
+          <BlogsTable />
         </Tab>
 
       </Tabs>
