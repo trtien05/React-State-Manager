@@ -22,26 +22,8 @@ function UsersTable() {
 
     const [isOpenDeleteModal, setIsOpenDeleteModal] = useState<boolean>(false);
 
-    // const users = [
-    //     {
-    //         "id": 1,
-    //         "name": "Eric",
-    //         "email": "eric@gmail.com"
-    //     },
-    //     {
-    //         "id": 2,
-    //         "name": "Hỏi Dân IT",
-    //         "email": "hoidanit@gmail.com"
-    //     },
-    //     {
-    //         "id": 3,
-    //         "name": "Hỏi Dân IT",
-    //         "email": "admin@gmail.com"
-    //     }
-    // ]
-
     const { isPending, error, data: users } = useQuery({
-        queryKey: ['repoData'],
+        queryKey: ['fetchUser'],
         queryFn: (): Promise<IUser[]> =>
             fetch('http://localhost:8000/users').then((res) =>
                 res.json(),
@@ -64,15 +46,33 @@ function UsersTable() {
 
     const PopoverComponent = forwardRef((props: any, ref: any) => {
         const { id } = props;
+        const { isPending, error, data } = useQuery({
+            queryKey: ['fetchUser', id],
+            queryFn: (): Promise<IUser> =>
+                fetch(`http://localhost:8000/users/${id}`).then((res) =>
+                    res.json(),
+                ),
+        })
+        const getBody = () => {
+            if (isPending) return 'Loading detail...'
 
+            if (error) return 'An error has occurred: ' + error.message
+            if (data) {
+                return (
+                    <>
+                        <div>ID = {id}</div>
+                        <div>Name = {data?.name}</div>
+                        <div>Email = {data?.email}</div>
+                    </>
+                )
+            }
+        }
         return (
 
             <Popover ref={ref} {...props}>
                 <Popover.Header as="h3">Detail User</Popover.Header>
                 <Popover.Body>
-                    <div>ID = {id}</div>
-                    <div>Name = ?</div>
-                    <div>Email = ?</div>
+                    {getBody()}
                 </Popover.Body>
             </Popover>
         )
