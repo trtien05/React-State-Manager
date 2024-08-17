@@ -3,10 +3,20 @@ import Modal from 'react-bootstrap/Modal';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
 import { useState, useEffect } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import Spinner from 'react-bootstrap/Spinner';
+
+interface IBlog {
+    id: number,
+    title: string,
+    author: string,
+    content: string
+}
 
 const BlogEditModal = (props: any) => {
     const { isOpenUpdateModal, setIsOpenUpdateModal, dataBlog } = props;
     const [id, setId] = useState();
+    const queryClient = useQueryClient()
 
     const [title, setTitle] = useState<string>("");
     const [author, setAuthor] = useState<string>("");
@@ -21,6 +31,25 @@ const BlogEditModal = (props: any) => {
         }
     }, [dataBlog])
 
+    const mutation = useMutation({
+        mutationFn: async (payload: IBlog) => {
+            const response = await fetch(`http://localhost:8000/blogs/${payload.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            return response.json()
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['fetchBlog'] })
+            setAuthor('');
+            setContent('')
+            setTitle('')
+            setIsOpenUpdateModal(false)
+        },
+    })
     const handleSubmit = () => {
         if (!title) {
             alert("title empty");
@@ -34,7 +63,10 @@ const BlogEditModal = (props: any) => {
             alert("content empty");
             return;
         }
-        console.log({ title, author, content, id })
+        if (id) {
+            mutation.mutate({ id, title, content, author })
+
+        }
     }
 
     return (
@@ -80,10 +112,26 @@ const BlogEditModal = (props: any) => {
                     </FloatingLabel>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button
-                        variant='warning'
-                        onClick={() => setIsOpenUpdateModal(false)} className='mr-2'>Cancel</Button>
-                    <Button onClick={() => handleSubmit()}>Confirm</Button>
+                    {!mutation.isPending ? (
+                        <>
+                            <Button
+                                variant='warning'
+                                onClick={() => setIsOpenUpdateModal(false)} className='mr-2'>Cancel</Button>
+                            <Button onClick={() => handleSubmit()}>Save</Button>
+                        </>
+
+                    ) : (
+                        <Button variant="primary" disabled>
+                            <Spinner
+                                as="span"
+                                animation="border"
+                                size="sm"
+                                role="status"
+                                aria-hidden="true"
+                            />
+                            <></> Saving...
+                        </Button>
+                    )}
                 </Modal.Footer>
             </Modal>
         </>

@@ -8,25 +8,33 @@ import UsersPagination from './pagination/users.pagination';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
 import { useQuery } from '@tanstack/react-query'
+import { calculatePageCount } from '../helper';
+
 interface IUser {
     id: number,
     name: string,
     email: string
 }
 function UsersTable() {
-
     const [isOpenCreateModal, setIsOpenCreateModal] = useState<boolean>(false);
 
     const [isOpenUpdateModal, setIsOpenUpdateModal] = useState<boolean>(false);
     const [dataUser, setDataUser] = useState({});
 
     const [isOpenDeleteModal, setIsOpenDeleteModal] = useState<boolean>(false);
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [totalPages, setTotalPages] = useState<number>(1);
+    const PAGE_SIZE = 2;
 
     const { isPending, error, data: users } = useQuery({
-        queryKey: ['fetchUser'],
+        queryKey: ['fetchUser', currentPage],
         queryFn: (): Promise<IUser[]> =>
-            fetch('http://localhost:8000/users').then((res) =>
-                res.json(),
+            fetch(`http://localhost:8000/users?_page=${currentPage}&_limit=${PAGE_SIZE}`).then(
+                (res) => {
+                    const total_items = +(res.headers.get('X-Total-Count') ?? 0);
+                    setTotalPages(calculatePageCount(PAGE_SIZE, total_items));
+                    return res.json()
+                },
             ),
     })
 
@@ -129,7 +137,9 @@ function UsersTable() {
                 </tbody>
             </Table>
             <UsersPagination
-                totalPages={0}
+                totalPages={totalPages}
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
             />
             <UserCreateModal
                 isOpenCreateModal={isOpenCreateModal}
