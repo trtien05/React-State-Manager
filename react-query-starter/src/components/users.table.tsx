@@ -8,13 +8,9 @@ import UsersPagination from './pagination/users.pagination';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
 import { useQuery } from '@tanstack/react-query'
-import { calculatePageCount } from '../helper';
+import { IUser, useFetchUser, useFetchUserDetail } from '../config/fetch';
 
-interface IUser {
-    id: number,
-    name: string,
-    email: string
-}
+
 function UsersTable() {
     const [isOpenCreateModal, setIsOpenCreateModal] = useState<boolean>(false);
 
@@ -23,20 +19,8 @@ function UsersTable() {
 
     const [isOpenDeleteModal, setIsOpenDeleteModal] = useState<boolean>(false);
     const [currentPage, setCurrentPage] = useState<number>(1);
-    const [totalPages, setTotalPages] = useState<number>(1);
-    const PAGE_SIZE = 2;
 
-    const { isPending, error, data: users } = useQuery({
-        queryKey: ['fetchUser', currentPage],
-        queryFn: (): Promise<IUser[]> =>
-            fetch(`http://localhost:8000/users?_page=${currentPage}&_limit=${PAGE_SIZE}`).then(
-                (res) => {
-                    const total_items = +(res.headers.get('X-Total-Count') ?? 0);
-                    setTotalPages(calculatePageCount(PAGE_SIZE, total_items));
-                    return res.json()
-                },
-            ),
-    })
+    const { isPending, error, data, totalPages } = useFetchUser(currentPage);
 
     if (isPending) return 'Loading...'
 
@@ -54,13 +38,8 @@ function UsersTable() {
 
     const PopoverComponent = forwardRef((props: any, ref: any) => {
         const { id } = props;
-        const { isPending, error, data } = useQuery({
-            queryKey: ['fetchUser', id],
-            queryFn: (): Promise<IUser> =>
-                fetch(`http://localhost:8000/users/${id}`).then((res) =>
-                    res.json(),
-                ),
-        })
+
+        const { isPending, error, data } = useFetchUserDetail(id)
         const getBody = () => {
             if (isPending) return 'Loading detail...'
 
@@ -86,7 +65,6 @@ function UsersTable() {
         )
     })
 
-
     return (
         <>
             <div style={{ display: "flex", justifyContent: "space-between", margin: "15px 0" }}>
@@ -105,7 +83,7 @@ function UsersTable() {
                     </tr>
                 </thead>
                 <tbody>
-                    {users?.map(user => {
+                    {data?.map((user: any) => {
                         return (
                             <tr key={user.id}>
                                 <OverlayTrigger trigger="click" placement="right"
