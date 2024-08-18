@@ -10,6 +10,7 @@ export const store = configureStore({
   reducer: {
     counter: counterReducer,
   },
+  //saga is middleware, handle async action
   middleware: (getDefaultMiddleware) => {
     return getDefaultMiddleware().concat(sagaMiddleware);
   },
