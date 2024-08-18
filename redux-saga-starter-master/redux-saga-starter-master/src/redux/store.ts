@@ -2,6 +2,7 @@ import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
 import counterReducer from "./counter/counter.slide";
 import createSagaMiddleware from "redux-saga";
 import RootSaga from "../saga/root.saga";
+import userReducer from "./users/user.slide";
 
 //Create Saga Middleware
 const sagaMiddleware = createSagaMiddleware();
@@ -9,6 +10,7 @@ const sagaMiddleware = createSagaMiddleware();
 export const store = configureStore({
   reducer: {
     counter: counterReducer,
+    users: userReducer,
   },
   //saga is middleware, handle async action
   middleware: (getDefaultMiddleware) => {

@@ -33,19 +33,14 @@
   ],
   "users": [
     {
-      "email": "gfd@gmail.com",
-      "name": "Tien",
-      "id": 1
+      "email": "GFDnit@gmail.com",
+      "name": "GFD",
+      "id": 2
     },
     {
-      "id": 2,
-      "name": "Hỏi Dân IT",
-      "email": "hoidanit@gmail.com"
-    },
-    {
-      "id": 3,
-      "name": "Hỏi Dân IT",
-      "email": "admin@gmail.com"
+      "email": "admin@gmail.com",
+      "name": "BVC",
+      "id": 3
     },
     {
       "email": "fds",
@@ -61,6 +56,16 @@
       "email": "tien",
       "name": "ti",
       "id": 6
+    },
+    {
+      "email": "abc",
+      "name": "abc",
+      "id": 7
+    },
+    {
+      "email": "fds",
+      "name": "vxc",
+      "id": 8
     }
   ]
 }

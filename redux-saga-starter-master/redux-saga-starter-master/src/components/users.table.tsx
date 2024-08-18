@@ -4,6 +4,8 @@ import Button from 'react-bootstrap/Button';
 import UserCreateModal from './modal/user.create.modal';
 import UserEditModal from './modal/user.edit.modal';
 import UserDeleteModal from './modal/user.delete.modal';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { fetchUserPending } from '../redux/users/user.slide';
 
 
 function UsersTable() {
@@ -14,24 +16,12 @@ function UsersTable() {
     const [dataUser, setDataUser] = useState({});
 
     const [isOpenDeleteModal, setIsOpenDeleteModal] = useState<boolean>(false);
-
-    const users = [
-        {
-            "id": 1,
-            "name": "Eric",
-            "email": "eric@gmail.com"
-        },
-        {
-            "id": 2,
-            "name": "Hỏi Dân IT",
-            "email": "hoidanit@gmail.com"
-        },
-        {
-            "id": 3,
-            "name": "Hỏi Dân IT",
-            "email": "admin@gmail.com"
-        }
-    ]
+    const dispatch = useAppDispatch();
+    const isPending = useAppSelector(state => state.users.isPending);
+    const users = useAppSelector(state => state.users.data);
+    useEffect(() => {
+        dispatch(fetchUserPending())
+    }, [])
 
     const handleEditUser = (user: any) => {
         setDataUser(user);
@@ -61,7 +51,12 @@ function UsersTable() {
                     </tr>
                 </thead>
                 <tbody>
-                    {users?.map(user => {
+                    {isPending === true &&
+                        <tr>
+                            <td colSpan={4}>No Data...</td>
+                        </tr>
+                    }
+                    {isPending === false && users?.map(user => {
                         return (
                             <tr key={user.id}>
                                 <td>{user.id}</td>
