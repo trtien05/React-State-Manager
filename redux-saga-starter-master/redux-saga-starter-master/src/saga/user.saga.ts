@@ -97,7 +97,5 @@ function* userSaga() {
   yield takeEvery(editUserPending, handleEditUser);
   yield takeEvery(deleteUserPending, handleDeleteUser);
 
-
-
 }
 export default userSaga;

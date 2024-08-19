@@ -1,5 +1,5 @@
 import { createAction, createSlice } from "@reduxjs/toolkit";
-import { IUser } from "../../types/backend";
+import { ILogin, IUser } from "../../types/backend";
 
 export interface CounterState {
   isPending: boolean;
@@ -38,6 +38,9 @@ const initialState: CounterState = {
   data: [],
   errors: [],
 };
+
+export const loginPending = createAction<ILogin>("loginPending");
+export const logoutPending = createAction("logoutPending");
 
 export const fetchUserPending = createAction("fetchUserPending");
 export const fetchUserSuccess = createAction<IUser[]>("fetchUserSuccess");
